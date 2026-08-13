@@ -5,3 +5,4 @@ torch
 torchvision
 open_clip_torch
 Pillow
+opencv-python-headless

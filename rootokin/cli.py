@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 import typer
 
@@ -73,6 +73,11 @@ def run(
     duration: float = 5.0,
     output_dir: Path = Path("output/run"),
     backend: str = "skyreels",
+    known_characters: Optional[List[str]] = typer.Option(
+        None,
+        "--known-character",
+        help="Known character names to bias script parsing; repeat the option to pass multiple names.",
+    ),
 ) -> None:
     """Build shots from script and run continuity-conditioned generation."""
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -82,6 +87,7 @@ def run(
         duration_minutes=duration,
         output_dir=output_dir,
         backend=backend,
+        known_characters=known_characters,
     )
     typer.echo(f"Pipeline finished → {output_dir}")
 

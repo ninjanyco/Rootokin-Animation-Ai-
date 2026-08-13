@@ -16,6 +16,7 @@ dependencies = [
   "torchvision",
   "open_clip_torch",
   "Pillow",
+  "opencv-python-headless",
 ]
 
 [project.scripts]
