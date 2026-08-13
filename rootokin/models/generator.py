@@ -6,7 +6,7 @@ Provides real loading stubs + lattice conditioning.
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 try:
     import torch
@@ -14,6 +14,9 @@ except Exception:  # pragma: no cover - optional dependency
     torch = None
 
 from rootokin.lattice.nodes import ContinuityLattice, ShotNode
+
+if TYPE_CHECKING:
+    from rootokin.lattice.continuity_lattice import LatticeManager
 
 
 class RootokinGenerator:
@@ -140,7 +143,11 @@ class RootokinGenerator:
     # ------------------------------------------------------------------
     # Lattice conditioning (unchanged logic, now feeds real models)
     # ------------------------------------------------------------------
-    def condition_from_lattice(self, lattice: ContinuityLattice, shot: ShotNode) -> Dict[str, Any]:
+    def condition_from_lattice(
+        self,
+        lattice: Union["LatticeManager", ContinuityLattice],
+        shot: ShotNode,
+    ) -> Dict[str, Any]:
         lattice_data = getattr(lattice, "lattice", lattice)
         if hasattr(lattice, "retrieve_for_shot"):
             ctx = lattice.retrieve_for_shot(shot)
@@ -191,7 +198,7 @@ class RootokinGenerator:
     # ------------------------------------------------------------------
     def generate_shot(
         self,
-        lattice: ContinuityLattice,
+        lattice: Union["LatticeManager", ContinuityLattice],
         shot: ShotNode,
         output_dir: Path,
         duration_sec: float = 5.0,

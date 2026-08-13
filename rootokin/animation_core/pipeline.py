@@ -1,26 +1,10 @@
 from pathlib import Path
 from typing import Dict, List, Optional
-import json
 
 from rootokin.animation_core.keyframe import update_lattice_with_shot
 from rootokin.lattice.continuity_lattice import LatticeManager
 from rootokin.models.generator import RootokinGenerator
 from rootokin.script_engine.parser import parse_script
-
-
-def _read_script(script_path: Path) -> List[dict]:
-    text = script_path.read_text().strip()
-    if not text:
-        return []
-    if script_path.suffix.lower() == ".json":
-        data = json.loads(text)
-        if isinstance(data, list):
-            return data
-        if isinstance(data, dict) and "beats" in data and isinstance(data["beats"], list):
-            return data["beats"]
-        raise ValueError("Unsupported script JSON format")
-    lines = [line.strip() for line in text.splitlines() if line.strip()]
-    return [{"text": line, "characters": []} for line in lines]
 
 
 def run_pipeline(

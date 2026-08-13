@@ -49,6 +49,8 @@ EMOTION_KEYWORDS = {
     "romantic": "affection",
 }
 
+STOP_WORDS = {"the", "a", "an", "and", "then", "with", "from", "into", "scene"}
+
 
 def _extract_characters(text: str, known: Optional[List[str]] = None) -> List[str]:
     known = known or []
@@ -58,7 +60,7 @@ def _extract_characters(text: str, known: Optional[List[str]] = None) -> List[st
             found.add(name)
     for match in CHARACTER_PATTERN.finditer(text):
         word = match.group(1)
-        if word.lower() not in {"the", "a", "an", "and", "then", "with", "from", "into", "scene"}:
+        if word.lower() not in STOP_WORDS:
             found.add(word)
     return sorted(found) if found else ["main"]
 

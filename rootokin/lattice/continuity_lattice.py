@@ -23,6 +23,9 @@ class LatticeManager:
         self._vectors.append(vector)
         self._meta.append(meta)
 
+    def add_to_memory(self, embedding: Embedding, meta: Dict[str, Any]) -> None:
+        self._add_to_memory(embedding, meta)
+
     def _get_previous_keyframes(self, shot: ShotNode) -> List[Path]:
         if not shot.previous_shot_id:
             return []

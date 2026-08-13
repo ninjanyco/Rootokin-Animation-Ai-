@@ -96,7 +96,7 @@ def update_lattice_with_shot(
     shot.retrieved_context["keyframe_embeddings"] = [embed.model_dump() for embed in embeds]
 
     for embed, path in zip(embeds, kf_paths):
-        mgr._add_to_memory(
+        mgr.add_to_memory(
             embed,
             {
                 "type": "shot_keyframe",
