@@ -51,6 +51,31 @@ class LatticeTests(unittest.TestCase):
         self.assertIn(character.id, loaded.characters)
         self.assertEqual(loaded.characters[character.id].reference_images, [Path("ref.png")])
 
+    def test_load_rebuilds_character_and_keyframe_memory(self):
+        manager = LatticeManager(vector_backend="numpy")
+        character = CharacterNode(name="Ari")
+        manager.add_character(character)
+        manager.inject_image_refs(
+            character.id,
+            [Path("ref.png")],
+            [Embedding(vector=[0.1, 0.2], source="image")],
+        )
+        shot = manager.build_from_script([{"text": "Ari runs", "characters": [character.id]}]).shots[0]
+        shot.retrieved_context["keyframe_embeddings"] = [
+            Embedding(vector=[0.3, 0.4], source="keyframe").model_dump()
+        ]
+
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            path = Path(tmp_dir) / "lattice.json"
+            manager.save(path)
+            restored = LatticeManager(vector_backend="numpy")
+            restored.load(path)
+
+        context = restored.retrieve_for_shot(restored.lattice.shots[0], top_k=4)
+        restored_types = {hit["type"] for hit in context["semantic_memory"]}
+        self.assertIn("restored_character", restored_types)
+        self.assertIn("restored_keyframe", restored_types)
+
     def test_generator_condition_collects_references_and_controls(self):
         manager = LatticeManager()
         character = CharacterNode(name="Ari")

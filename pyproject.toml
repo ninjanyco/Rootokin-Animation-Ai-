@@ -17,6 +17,8 @@ dependencies = [
   "open_clip_torch",
   "Pillow",
   "opencv-python-headless",
+  "faiss-cpu",
+  # "chromadb",
 ]
 
 [project.scripts]

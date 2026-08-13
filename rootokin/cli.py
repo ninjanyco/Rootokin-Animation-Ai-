@@ -76,6 +76,7 @@ def run(
     known_characters: Optional[List[str]] = typer.Option(
         None,
         "--known-character",
+        "--characters",
         help="Known character names to bias script parsing; repeat the option to pass multiple names.",
     ),
 ) -> None:
