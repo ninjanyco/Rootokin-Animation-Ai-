@@ -1,4 +1,4 @@
-from .manager import LatticeManager
+from .continuity_lattice import LatticeManager
 from .nodes import CharacterNode, ContinuityLattice, Embedding, ShotNode, StyleNode, WorldNode
 
 __all__ = [

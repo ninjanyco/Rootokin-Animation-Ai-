@@ -1,0 +1,14 @@
+[
+  {
+    "text": "A pilot enters the observatory and checks the star-map.",
+    "characters": ["pilot"],
+    "camera": "slow dolly-in",
+    "emotion": "curious"
+  },
+  {
+    "text": "An anomaly blooms over the city skyline.",
+    "characters": ["pilot"],
+    "camera": "wide aerial",
+    "emotion": "awe"
+  }
+]

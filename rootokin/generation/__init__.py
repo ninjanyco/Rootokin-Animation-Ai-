@@ -1,3 +1,3 @@
-from .generator import RootokinGenerator
+from rootokin.models.generator import RootokinGenerator
 
 __all__ = ["RootokinGenerator"]
