@@ -1,0 +1,6 @@
+{
+  "name": "cosmic_continuity",
+  "prompt": "cinematic, coherent, non-extractive, continuous world",
+  "palette": ["#0A0F1F", "#9B7BFF", "#F5C26B"],
+  "rendering_mode": "cinematic"
+}

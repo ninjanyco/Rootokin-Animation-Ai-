@@ -1,0 +1,9 @@
+{
+  "name": "rootokin_world",
+  "physics_rules": {
+    "gravity": "9.81",
+    "lighting": "volumetric_cinematic"
+  },
+  "architecture": "floating monolith city",
+  "symbolic_logic": ["continuity_over_flash", "non_extractive_worldbuilding"]
+}

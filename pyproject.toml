@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "rootokin-animation-engine"
+version = "0.1.0"
+description = "Continuity-first open animation engine scaffold"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "pydantic>=2,<3",
+  "numpy>=1.24",
+  "typer>=0.12",
+  "torch",
+  "torchvision",
+  "open_clip_torch",
+  "Pillow",
+  "opencv-python-headless",
+  "faiss-cpu",
+  # "chromadb",
+]
+
+[project.scripts]
+rootokin = "rootokin.cli:app"
+
+[tool.setuptools.packages.find]
+include = ["rootokin*"]
