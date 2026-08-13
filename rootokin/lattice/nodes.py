@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 import uuid
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, PrivateAttr
 
 
 class Embedding(BaseModel):
@@ -65,6 +65,7 @@ class ContinuityLattice(BaseModel):
     characters: Dict[str, CharacterNode] = Field(default_factory=dict)
     shots: List[ShotNode] = Field(default_factory=list)
     memory_index: Dict[str, Any] = Field(default_factory=dict)  # later FAISS/Chroma
+    _shot_index: Dict[str, ShotNode] = PrivateAttr(default_factory=dict)
 
     def add_character(self, char: CharacterNode) -> None:
         self.characters[char.id] = char
@@ -86,21 +87,25 @@ class ContinuityLattice(BaseModel):
         char.control_maps.update(control_maps)
         char.embeddings.extend(stylized_embeds)
 
+    def refresh_indexes(self) -> None:
+        self._shot_index = {shot.id: shot for shot in self.shots}
+
     def retrieve_for_shot(self, shot: ShotNode, top_k: int = 4) -> Dict[str, Any]:
         """Semantic + temporal retrieval for conditioning."""
         del top_k  # placeholder for future ranker
         relevant_chars = {cid: self.characters[cid] for cid in shot.characters if cid in self.characters}
         prev_keyframes: List[Path] = []
         if shot.previous_shot_id:
-            for existing_shot in self.shots:
-                if existing_shot.id == shot.previous_shot_id:
-                    prev_keyframes = existing_shot.keyframe_paths
-                    break
+            if shot.previous_shot_id not in self._shot_index:
+                self.refresh_indexes()
+            prev_shot = self._shot_index.get(shot.previous_shot_id)
+            if prev_shot:
+                prev_keyframes = prev_shot.keyframe_paths
 
         return {
             "world": self.world,
             "style": self.style,
             "characters": relevant_chars,
             "previous_keyframes": prev_keyframes,
-            "physics": self.world.physics_rules,
+            "physics_constraints": self.world.physics_rules,
         }

@@ -75,6 +75,17 @@ class LatticeTests(unittest.TestCase):
         self.assertEqual(condition["ref_images"], [Path("char.png")])
         self.assertEqual(condition["control_maps"], {"depth": Path("depth.exr")})
 
+    def test_generate_shot_persists_retrieved_context(self):
+        manager = LatticeManager()
+        shot = manager.build_from_script([{"text": "Simple beat", "characters": []}]).shots[0]
+        generator = RootokinGenerator()
+
+        output = generator.generate_shot(manager.lattice, shot, Path("/tmp"))
+
+        self.assertEqual(output, Path("/tmp/shot_0000.mp4"))
+        self.assertEqual(shot.generated_video_path, output)
+        self.assertIn("prompt", shot.retrieved_context)
+
 
 if __name__ == "__main__":
     unittest.main()

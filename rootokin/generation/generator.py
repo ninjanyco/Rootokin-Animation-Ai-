@@ -34,7 +34,7 @@ class RootokinGenerator:
             "control_maps": control_maps,
             "style_prompt": ctx["style"].prompt,
             "previous_keyframes": ctx["previous_keyframes"],
-            "physics_constraints": ctx["physics"],
+            "physics_constraints": ctx["physics_constraints"],
         }
 
     def _build_prompt(self, ctx: Dict[str, Any], shot: ShotNode) -> str:
@@ -48,7 +48,7 @@ class RootokinGenerator:
         )
 
     def generate_shot(self, lattice: ContinuityLattice, shot: ShotNode, output_dir: Path) -> Path:
-        self.condition_from_lattice(lattice, shot)
+        shot.retrieved_context = self.condition_from_lattice(lattice, shot)
         video_path = output_dir / f"shot_{shot.index:04d}.mp4"
         shot.generated_video_path = video_path
         return video_path

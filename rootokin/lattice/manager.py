@@ -33,6 +33,7 @@ class LatticeManager:
             self.lattice.shots.append(shot)
             prev_id = shot.id
 
+        self.lattice.refresh_indexes()
         return self.lattice
 
     def save(self, path: Path) -> None:
@@ -41,4 +42,5 @@ class LatticeManager:
     def load(self, path: Path) -> ContinuityLattice:
         data = json.loads(path.read_text())
         self.lattice = ContinuityLattice.model_validate(data)
+        self.lattice.refresh_indexes()
         return self.lattice
