@@ -76,6 +76,20 @@ class LatticeTests(unittest.TestCase):
         self.assertIn("restored_character", restored_types)
         self.assertIn("restored_keyframe", restored_types)
 
+    def test_lattice_retrieve_for_shot_delegates_to_manager_memory(self):
+        manager = LatticeManager(vector_backend="numpy")
+        character = CharacterNode(name="Ari")
+        manager.add_character(character)
+        manager.inject_image_refs(
+            character.id,
+            [Path("ref.png")],
+            [Embedding(vector=[0.1, 0.2], source="image")],
+        )
+        shot = manager.build_from_script([{"text": "Ari runs", "characters": [character.id]}]).shots[0]
+
+        context = manager.lattice.retrieve_for_shot(shot, top_k=4)
+        self.assertGreaterEqual(len(context["semantic_memory"]), 1)
+
     def test_generator_condition_collects_references_and_controls(self):
         manager = LatticeManager()
         character = CharacterNode(name="Ari")

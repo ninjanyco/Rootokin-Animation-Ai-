@@ -44,7 +44,11 @@ class LatticeManager:
         self._vectors: List[np.ndarray] = []
         self._id_counter = 0
 
+        self._attach_manager()
         self._init_vector_store()
+
+    def _attach_manager(self) -> None:
+        self.lattice.attach_manager(self)
 
     def _init_vector_store(self) -> None:
         self._index = None
@@ -247,6 +251,7 @@ class LatticeManager:
     def load(self, path: Path) -> ContinuityLattice:
         data = json.loads(path.read_text())
         self.lattice = ContinuityLattice.model_validate(data)
+        self._attach_manager()
         self.lattice.refresh_indexes()
         self._init_vector_store()
         for char in self.lattice.characters.values():
