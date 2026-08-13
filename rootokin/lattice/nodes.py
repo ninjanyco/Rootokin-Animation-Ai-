@@ -107,5 +107,7 @@ class ContinuityLattice(BaseModel):
             "style": self.style,
             "characters": relevant_chars,
             "previous_keyframes": prev_keyframes,
+            "physics": self.world.physics_rules,
             "physics_constraints": self.world.physics_rules,
+            "semantic_memory": [],
         }

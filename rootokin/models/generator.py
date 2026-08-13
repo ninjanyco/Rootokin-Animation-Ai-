@@ -119,7 +119,7 @@ class RootokinGenerator:
         Wan 2.2 open weights via Diffusers.
         """
         try:
-            from diffusers import AutoencoderKLWan, WanImageToVideoPipeline, WanPipeline
+            from diffusers import AutoencoderKLWan, WanPipeline
 
             model_id = "Wan-AI/Wan2.2-T2V-A14B-Diffusers"
             vae = AutoencoderKLWan.from_pretrained(model_id, subfolder="vae", torch_dtype=torch.float32)
@@ -131,7 +131,6 @@ class RootokinGenerator:
             pipe.to(self.device)
             self.pipelines["wan_t2v"] = pipe
 
-            del WanImageToVideoPipeline
             print("[generator] Wan 2.2 Diffusers pipelines loaded")
         except Exception as exc:
             print(f"[generator] Wan load failed: {exc}")
@@ -207,14 +206,17 @@ class RootokinGenerator:
             if self.backend == "skyreels" and "r2v" in self.pipelines:
                 pipe = self.pipelines["r2v"]
                 del pipe, duration_sec, seed
+                video_path.touch()
                 print("  → SkyReels call stubbed – fill with real pipe.generate_video(...)")
             elif self.backend == "ltx" and self.pipelines.get("ltx"):
                 pipe = self.pipelines["ltx"]
                 del pipe, duration_sec
+                video_path.touch()
                 print("  → LTX call stubbed – ready for real Diffusers call")
             elif self.backend == "wan" and self.pipelines.get("wan_t2v"):
                 pipe = self.pipelines["wan_t2v"]
                 del pipe
+                video_path.touch()
                 print("  → Wan call stubbed")
             else:
                 video_path.touch()
