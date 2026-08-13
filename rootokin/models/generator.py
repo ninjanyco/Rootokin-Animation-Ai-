@@ -85,12 +85,9 @@ class RootokinGenerator:
         Official loading pattern uses their LongCatVideoPipeline.
         """
         try:
-            from transformers import AutoTokenizer, UMT5EncoderModel
+            import importlib
 
-            checkpoint_dir = "meituan-longcat/LongCat-Video"
-
-            del AutoTokenizer, UMT5EncoderModel, checkpoint_dir
-
+            importlib.import_module("transformers")
             self.pipelines["longcat"] = None
             print("[generator] LongCat-Video stub registered (fill in official pipeline)")
         except Exception as exc:
@@ -134,7 +131,7 @@ class RootokinGenerator:
             print("[generator] Wan 2.2 Diffusers pipelines loaded")
         except Exception as exc:
             print(f"[generator] Wan load failed: {exc}")
-            self.pipelines["wan"] = None
+            self.pipelines["wan_t2v"] = None
 
     # ------------------------------------------------------------------
     # Lattice conditioning (unchanged logic, now feeds real models)
@@ -204,18 +201,12 @@ class RootokinGenerator:
 
         try:
             if self.backend == "skyreels" and "r2v" in self.pipelines:
-                pipe = self.pipelines["r2v"]
-                del pipe, duration_sec, seed
                 video_path.touch()
                 print("  → SkyReels call stubbed – fill with real pipe.generate_video(...)")
             elif self.backend == "ltx" and self.pipelines.get("ltx"):
-                pipe = self.pipelines["ltx"]
-                del pipe, duration_sec
                 video_path.touch()
                 print("  → LTX call stubbed – ready for real Diffusers call")
             elif self.backend == "wan" and self.pipelines.get("wan_t2v"):
-                pipe = self.pipelines["wan_t2v"]
-                del pipe
                 video_path.touch()
                 print("  → Wan call stubbed")
             else:

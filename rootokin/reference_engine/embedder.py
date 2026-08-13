@@ -130,8 +130,9 @@ def embed_images(
         ]
     except Exception as exc:
         print(f"[embedder] Falling back to deterministic placeholder image embeddings: {exc}")
+        embedding_model = f"open_clip:{model_name}/{pretrained}"
         return [
-            Embedding(vector=_placeholder_vector(str(path)), model_name=model_name, source=str(path))
+            Embedding(vector=_placeholder_vector(str(path)), model_name=embedding_model, source=str(path))
             for path in normalized_paths
         ]
 
@@ -156,4 +157,8 @@ def embed_text(
         )
     except Exception as exc:
         print(f"[embedder] Falling back to deterministic placeholder text embedding: {exc}")
-        return Embedding(vector=_placeholder_vector(text), model_name=model_name, source="text")
+        return Embedding(
+            vector=_placeholder_vector(text),
+            model_name=f"open_clip:{model_name}/{pretrained}",
+            source="text",
+        )
