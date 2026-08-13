@@ -40,7 +40,7 @@ def run_pipeline(
     videos_dir.mkdir(parents=True, exist_ok=True)
 
     for shot in manager.lattice.shots:
-        generated_path = generator.generate_shot(manager.lattice, shot, videos_dir)
+        generated_path = generator.generate_shot(manager, shot, videos_dir)
         manager.lattice.memory_index[f"shot_{shot.index:04d}"] = {
             "video_path": str(generated_path),
             "context": shot.retrieved_context,

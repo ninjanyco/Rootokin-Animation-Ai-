@@ -98,9 +98,13 @@ class RootokinGenerator:
         LTX-2.3 via Diffusers (cleanest open integration).
         """
         try:
-            from diffusers import LTX2Pipeline
+            import diffusers
 
-            pipe = LTX2Pipeline.from_pretrained(
+            pipeline_cls = getattr(diffusers, "LTXVideoPipeline", None) or getattr(diffusers, "LTXPipeline", None)
+            if pipeline_cls is None:
+                raise ImportError("No LTX pipeline class found in diffusers")
+
+            pipe = pipeline_cls.from_pretrained(
                 "Lightricks/LTX-2.3",
                 torch_dtype=torch.bfloat16 if torch is not None else None,
             )
@@ -137,15 +141,18 @@ class RootokinGenerator:
     # Lattice conditioning (unchanged logic, now feeds real models)
     # ------------------------------------------------------------------
     def condition_from_lattice(self, lattice: ContinuityLattice, shot: ShotNode) -> Dict[str, Any]:
+        lattice_data = getattr(lattice, "lattice", lattice)
         if hasattr(lattice, "retrieve_for_shot"):
             ctx = lattice.retrieve_for_shot(shot)
         else:
             ctx = {
-                "world": lattice.world,
-                "style": lattice.style,
-                "characters": {cid: lattice.characters[cid] for cid in shot.characters if cid in lattice.characters},
+                "world": lattice_data.world,
+                "style": lattice_data.style,
+                "characters": {
+                    cid: lattice_data.characters[cid] for cid in shot.characters if cid in lattice_data.characters
+                },
                 "previous_keyframes": [],
-                "physics": lattice.world.physics_rules,
+                "physics": lattice_data.world.physics_rules,
                 "semantic_memory": [],
             }
 
