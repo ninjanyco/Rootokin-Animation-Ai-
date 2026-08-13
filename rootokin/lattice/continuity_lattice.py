@@ -42,11 +42,15 @@ class LatticeManager:
         self._meta: List[Dict[str, Any]] = []
         self._dim = 768
         self._vectors: List[np.ndarray] = []
+        self._id_counter = 0
 
         self._init_vector_store()
 
     def _init_vector_store(self) -> None:
         self._index = None
+        self._meta = []
+        self._vectors = []
+        self._id_counter = 0
         if self.vector_backend == "faiss" and HAS_FAISS:
             self._index = faiss.IndexFlatIP(self._dim)
             print("[lattice] Using FAISS (IndexFlatIP)")
@@ -65,7 +69,6 @@ class LatticeManager:
             print("[lattice] Using Chroma")
         else:
             print("[lattice] Falling back to pure NumPy (install faiss-cpu or chromadb for better scaling)")
-        self._vectors = []
 
     def _ensure_vector_store_dim(self, vec: np.ndarray) -> None:
         if vec.shape[0] == self._dim:
@@ -90,7 +93,7 @@ class LatticeManager:
             self._index.add(vec.reshape(1, -1))
             self._meta.append(meta)
         elif self.vector_backend == "chroma" and HAS_CHROMA and self._index is not None:
-            uid = f"{meta.get('type', 'unk')}_{len(self._meta)}_{hash(str(meta)) % 10**8}"
+            uid = f"{meta.get('type', 'unk')}_{self._id_counter}"
             self._index.add(
                 embeddings=[vec.tolist()],
                 documents=[meta.get("source", "")],
@@ -101,6 +104,7 @@ class LatticeManager:
         else:
             self._vectors.append(vec)
             self._meta.append(meta)
+        self._id_counter += 1
 
     def add_to_memory(self, embedding: Embedding, meta: Dict[str, Any]) -> None:
         self._add_to_memory(embedding, meta)
@@ -245,7 +249,6 @@ class LatticeManager:
         self.lattice = ContinuityLattice.model_validate(data)
         self.lattice.refresh_indexes()
         self._init_vector_store()
-        self._meta = []
         for char in self.lattice.characters.values():
             for embedding in char.embeddings:
                 self._add_to_memory(
